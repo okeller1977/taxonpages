@@ -1,8 +1,8 @@
 ---
 title: About
-contact_email: user@example.com
+contact_email: admin@lampyridae.world
 copyright: All content is CC 0 so that it maybe be shared throughout the world in places like Wikipedia.
-citation: Project collaborative. 2022. Website title. Available at https://example.com. 
+citation: Project collaborative. 2024. Website title. Available at https://example.com. 
 ---
 
 # {{frontmatter.title}}
@@ -17,10 +17,7 @@ If you have a question, want to report new data relevant to the project, or have
  _Please contact us if you would like to join this effort._
 
 Made possible by the wonderful:
-* Gandalf - Technical lead
-* Aragorn - Outside advisor 
-* Frodo - Lead curator
-* Samwise - Emotional support
+* Oliver Keller (admin@lampyridae.world)
 
 ## Citing
 * This website - {{frontmatter.citation}}
