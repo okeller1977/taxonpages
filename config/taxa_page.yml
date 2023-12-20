@@ -5,6 +5,7 @@ taxa_page:
           - panel:type
           - panel:type-specimen
           - panel:nomenclature
+            label: 'REference'
           - panel:nomenclature-references
 
         - - panel:map
