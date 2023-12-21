@@ -4,7 +4,7 @@
       <h2>Referencing this website</h2>
       <p>
         When referencing this website, please use the following format:
-        Dal Pos <i>et al</i>. The World Ichneumonidae Database
+        Keller, O.. The Lampyridae of the World Database
         [retrieval date]. &lt;
         <a :href="project_url">
           {{ project_url }}
@@ -28,7 +28,7 @@
       <h2>Find out more</h2>
       <p>
       Learn how to collaborate with the 
-      World Ichneumonidae Database. 
+      World Lampyridae Database. 
       Contact information, technical details, and more are available 
       <RouterLink to="about">here</RouterLink>.
       </p>
