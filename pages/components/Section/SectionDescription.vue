@@ -5,21 +5,21 @@
       <div class="prose !container dark:prose-invert">
         <div>
           <p>
-            The <b>World Ichneumonidae Database (WID)</b> is a comprehensive and 
-            collaborative database for world fauna of Ichneumonidae managed in 
+            The <b>Lampyridae of the World Database</b> is a comprehensive and 
+            collaborative database for world fauna of Lampyridae managed in 
             <a href="https://taxonworks.org"> TaxonWorks</a>. In this portal 
             you can find information about distribution, nomenclature, 
-            and biology of the world Darwin wasps.
+            and biology of the world fireflies.
           </p>
           <p>
-            The core purpose of the WID is 
-            the research on Ichneumonidae by providing a centralized resource for images, 
+            The core purpose of the database is 
+            the research on Lampyridae by providing a centralized resource for images, 
             reference, and taxonomy/nomenclature. Moreover, being updateble and open access,
             the portal is designed to include all the relevant information updated 
             constantly.
           </p>
           <p>
-            WID is open to contributions from anyone with specimen records and
+            This database is open to contributions from anyone with specimen records and
             images.
           </p>
         </div>
