@@ -4,7 +4,7 @@
       class="object-cover overflow-hidden h-[550px] w-full absolute"
       :key="currentImage.src"
       :src="currentImage.src"
-      alt="Dichroplus maculipennis"
+      alt="Logo"
     />
     <div class="bg-black bg-opacity-25 absolute h-full w-full top-0">
       <slot />
@@ -25,7 +25,7 @@
 
 <script setup>
 import { onMounted, ref, computed } from 'vue'
-import logoWID from './images/logoWID.png'
+import logoWID from './images/fireflyDatabase.png'
 
 const props = defineProps({
   duration: {
@@ -37,9 +37,9 @@ const props = defineProps({
 const images = [
 
   {
-    label: 'LogoWID',
-    copyright: 'Filippo Di Giovanni',
-    src: logoWID,
+    label: 'LogoWLD',
+    copyright: 'Oliver Keller',
+    src: fireflyDatabase.png,
     otuId: 3435
   }
 ]
