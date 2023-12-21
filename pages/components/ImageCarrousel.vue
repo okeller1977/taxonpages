@@ -25,7 +25,7 @@
 
 <script setup>
 import { onMounted, ref, computed } from 'vue'
-import logoWID from './images/fireflyDatabase.png'
+import fireflyDatabase from './images/fireflyDatabase.png'
 
 const props = defineProps({
   duration: {
@@ -39,7 +39,7 @@ const images = [
   {
     label: 'LogoWLD',
     copyright: 'Oliver Keller',
-    src: fireflyDatabase.png,
+    src: fireflyDatabase,
     otuId: 3435
   }
 ]
