@@ -6,22 +6,14 @@
           <VCard>
             <VCardContent>
               <h3 class="mt-2 mb-0">News</h3>
-              <span class="text-base-soft">2023-10-09</span>
+              <span class="text-base-soft">2024-07-03</span>
               <p>
-                Text
+                Official launch of Lampyridae.World
               </p>
             </VCardContent>
           </VCard>
           
-          <VCard>
-            <VCardContent>
-              <h3 class="mt-2 mb-0">News</h3>
-              <span class="text-base-soft">2023-10-09</span>
-              <p>
-                Text
-              </p>
-            </VCardContent>
-          </VCard>  
+      
 
           <VCard>
             <VCardContent>
