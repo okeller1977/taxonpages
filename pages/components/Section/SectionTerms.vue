@@ -4,7 +4,7 @@
       <h2>Referencing this website</h2>
       <p>
         When referencing this website, please use the following format:
-        Keller, O.. The Lampyridae of the World Database
+        Keller, O. 2024. The Lampyridae of the World Database
         [retrieval date]. &lt;
         <a :href="project_url">
           {{ project_url }}
