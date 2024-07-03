@@ -1,6 +1,6 @@
 ---
 title: About
-contact_email: admin@lampyridae.world
+contact_email: okeller1977@gmail.com
 copyright: All content is CC 0 so that it maybe be shared throughout the world in places like Wikipedia.
 citation: Project collaborative. 2024. Website title. Available at https://example.com. 
 ---
