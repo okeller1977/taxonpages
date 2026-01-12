@@ -16,7 +16,7 @@ If you have a question, want to report new data relevant to the project, or have
 ## Team
  _Please contact us if you would like to join this effort._
 
-Made possible by the wonderful:
+Made possible by:
 * Oliver Keller (okeller1977@gmail.com)
 
 ## Citing
