@@ -18,6 +18,11 @@ taxa_page:
     rank_group: ['SpeciesGroup']
     panels:
       - - - panel:specimen-records
+  asserted_distributions:
+    label: 'Asserted Distributions'
+    rank_group: ['SpeciesGroup']
+    panels:
+      - - - id: panel:asserted-distributions    
   iNaturalist:
     label: 'iNaturalist'
     rank_group: ['GenusGroup', 'SpeciesGroup']
