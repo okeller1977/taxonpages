@@ -1,243 +1,297 @@
+```html
 <template>
-  <VCard>
-    <ClientOnly>
-      <VSpinner v-if="isLoading" />
-    </ClientOnly>
-    <VCardHeader>
-      Asserted distributions ({{ totalCount }})
-    </VCardHeader>
-    <VCardContent class="min-h-[6rem] overflow-x-auto">
+  <div class="flex flex-col gap-4">
 
-      <!-- Tabs: visible when records span multiple OTUs (descendants + synonyms) -->
-      <div
-        v-if="showTabs"
-        class="flex flex-wrap gap-x-1 mb-4 border-b"
-      >
-        <button
-          v-for="tab in tabs"
-          :key="tab.id"
-          class="px-3 py-1.5 text-sm -mb-px border-b-2 transition-colors"
-          :class="selectedOtuId === tab.id
-            ? 'border-current text-secondary font-medium'
-            : 'border-transparent opacity-50 hover:opacity-100'"
-          @click="selectedOtuId = tab.id"
+    <!-- ========================= -->
+    <!-- TOP PANEL: MAP -->
+    <!-- ========================= -->
+<div v-if="otuId" class="w-full mb-4">
+  <div class="w-full">
+    <PanelMapV2
+      class="h-full w-full"
+      :otu-id="otuId"
+      :otu="{ id: otuId }"
+      :taxon="props.taxon"
+    />
+  </div>
+</div>
+
+    <!-- ========================= -->
+    <!-- BOTTOM PANEL: ASSERTED DISTRIBUTIONS -->
+    <!-- ========================= -->
+    <VCard>
+      <ClientOnly>
+        <VSpinner v-if="isLoading" />
+      </ClientOnly>
+
+      <VCardHeader>
+        Asserted distributions ({{ totalCount }})
+      </VCardHeader>
+
+      <VCardContent class="min-h-[6rem] overflow-x-auto">
+
+        <!-- Tabs -->
+        <div
+          v-if="showTabs"
+          class="flex flex-wrap gap-x-1 mb-4 border-b"
         >
-          <template v-if="tab.id === 'all'">All</template>
-          <template v-else>
-            <span
-              v-if="tab.isSynonym"
-              class="mr-0.5"
-              title="Synonym"
-            >&#10060;</span>
-            <em>{{ tab.label }}</em>
-          </template>
-          <span class="ml-1 text-xs opacity-60">({{ tab.count }})</span>
-        </button>
-      </div>
-
-      <VTable v-if="groupedDistributions.length">
-        <VTableHeader class="normal-case">
-          <VTableHeaderRow>
-            <VTableHeaderCell>Area</VTableHeaderCell>
-            <VTableHeaderCell v-if="isMergedView">Taxa</VTableHeaderCell>
-            <VTableHeaderCell>Absent</VTableHeaderCell>
-            <VTableHeaderCell>Citation</VTableHeaderCell>
-          </VTableHeaderRow>
-        </VTableHeader>
-        <VTableBody>
-          <template
-            v-for="group in groupedDistributions"
-            :key="group.parent"
+          <button
+            v-for="tab in tabs"
+            :key="tab.id"
+            class="px-3 py-1.5 text-sm -mb-px border-b-2 transition-colors"
+            :class="selectedOtuId === tab.id
+              ? 'border-current text-secondary-color font-medium'
+              : 'border-transparent opacity-50 hover:opacity-100'"
+            @click="selectedOtuId = tab.id"
           >
-            <tr>
-              <td
-                :colspan="isMergedView ? 4 : 3"
-                class="px-4 pt-5 pb-1 text-sm font-bold border-b text-base-content"
+            <template v-if="tab.id === 'all'">All</template>
+            <template v-else>
+              <em>{{ tab.label }}</em>
+              <span
+                v-if="tab.isSynonym"
+                class="ml-1 rounded bg-base-muted/70 px-1 py-px text-[10px] font-semibold uppercase tracking-wide not-italic"
+                title="Junior synonym — records published under this name"
+                >syn.</span
               >
-                {{ group.label }}
-                <span class="font-normal opacity-50 ml-1">({{ group.items.length }})</span>
-              </td>
-            </tr>
+            </template>
+            <span class="ml-1 text-xs opacity-60">({{ tab.count }})</span>
+          </button>
+        </div>
 
-            <VTableBodyRow
-              v-for="item in group.items"
-              :key="item.id"
+        <!-- TABLE -->
+        <VTable v-if="groupedDistributions.length">
+          <VTableHeader class="normal-case">
+            <VTableHeaderRow>
+              <VTableHeaderCell>Area</VTableHeaderCell>
+              <VTableHeaderCell v-if="isMergedView">Taxa</VTableHeaderCell>
+              <VTableHeaderCell>Absent</VTableHeaderCell>
+              <VTableHeaderCell>Citation</VTableHeaderCell>
+            </VTableHeaderRow>
+          </VTableHeader>
+
+          <VTableBody>
+            <template
+              v-for="group in groupedDistributions"
+              :key="group.parent"
             >
-              <VTableBodyCell class="pl-8">
-                <button
-                  class="font-semibold hover:underline cursor-pointer text-left text-base-content"
-                  @click="openMapModal(item)"
-                >{{ item.areaName }}</button>
-                <span
-                  v-if="item.areaType"
-                  class="text-xs opacity-50 ml-1.5"
-                >{{ item.areaType }}</span>
-                <VBadge
-                  v-for="tag in item.tags || []"
-                  :key="tag"
-                  class="ml-1"
-                  color="yellow"
-                  shape="pill"
-                  size="sm"
-                  weight="normal"
-                >{{ tag }}</VBadge>
-              </VTableBodyCell>
+              <tr>
+                <td
+                  :colspan="isMergedView ? 4 : 3"
+                  class="px-4 pt-5 pb-1 text-sm font-bold border-b text-base-content"
+                >
+                  {{ group.label }}
+                  <span class="font-normal opacity-50 ml-1">
+                    ({{ group.items.length }})
+                  </span>
+                </td>
+              </tr>
 
-              <!-- Taxa column: merged All-tab view only -->
-              <VTableBodyCell
-                v-if="isMergedView"
-                class="text-sm"
+              <VTableBodyRow
+                v-for="item in group.items"
+                :key="item.id"
               >
-                <template
-                  v-for="(entry, i) in item.otuEntries"
-                  :key="entry.otuId"
-                >
-                  <span
-                    v-if="entry.isSynonym"
-                    class="mr-0.5"
-                    title="Synonym"
-                  >&#10060;</span>
-                  <em>{{ entry.otuName }}</em><span v-if="i < item.otuEntries.length - 1">; </span>
-                </template>
-              </VTableBodyCell>
-
-              <VTableBodyCell>
-                <span
-                  v-if="item.isAbsent"
-                  class="text-danger text-sm font-medium"
-                >Absent</span>
-              </VTableBodyCell>
-
-              <VTableBodyCell class="text-sm">
-                <template
-                  v-for="(citation, i) in item.citationList"
-                  :key="citation.id"
-                >
+                <VTableBodyCell class="pl-8">
                   <button
-                    class="hover:underline cursor-pointer text-secondary"
-                    @click="activeCitation = citation"
-                    v-html="citation.display"
-                  />
-                  <span v-if="i < item.citationList.length - 1">; </span>
-                </template>
-              </VTableBodyCell>
-            </VTableBodyRow>
-          </template>
-        </VTableBody>
-      </VTable>
+                    class="font-semibold hover:underline cursor-pointer text-left text-primary-color"
+                    @click="openMapModal(item)"
+                  >
+                    {{ item.areaName }}
+                  </button>
 
-      <!-- Map modal -->
-      <Teleport to="body">
-        <VModal
-          v-if="mapModal.open"
-          @close="mapModal = { open: false }"
+                  <span
+                    v-if="item.areaType"
+                    class="text-xs opacity-50 ml-1.5"
+                  >
+                    {{ item.areaType }}
+                  </span>
+                </VTableBodyCell>
+
+                <VTableBodyCell
+                  v-if="isMergedView"
+                  class="text-sm"
+                >
+                  <template
+                    v-for="(entry, i) in item.otuEntries"
+                    :key="entry.otuId"
+                  >
+                    <em>{{ entry.otuName }}</em>
+                    <span
+                      v-if="entry.isSynonym"
+                      class="ml-0.5 text-[10px] opacity-60"
+                      title="Recorded under this junior synonym"
+                      >(syn.)</span
+                    >
+                    <span v-if="i < item.otuEntries.length - 1">; </span>
+                  </template>
+                </VTableBodyCell>
+
+                <VTableBodyCell>
+                  <span
+                    v-if="item.isAbsent"
+                    class="text-red-600 text-sm font-medium"
+                  >
+                    Absent
+                  </span>
+                </VTableBodyCell>
+
+                <VTableBodyCell class="text-sm">
+                  <template
+                    v-for="(citation, i) in item.citationList"
+                    :key="citation.id"
+                  >
+                    <button
+                      class="hover:underline cursor-pointer text-secondary-color"
+                      @click="activeCitation = citation"
+                      v-html="citation.display"
+                    />
+                    <span v-if="i < item.citationList.length - 1">; </span>
+                  </template>
+                </VTableBodyCell>
+              </VTableBodyRow>
+            </template>
+          </VTableBody>
+        </VTable>
+
+        <!-- Empty -->
+        <div
+          v-if="!isLoading && !groupedDistributions.length"
+          class="mx-auto my-8 px-2 py-2 text-sm text-gray-700 bg-gray-100 rounded-lg border border-gray-300 shadow-sm w-max text-center"
         >
-          <template #header>
-            <div class="text-sm font-medium">{{ mapModal.areaName }}</div>
-          </template>
-          <div class="p-4">
-            <div
-              v-if="mapModal.loading"
-              class="min-h-[200px] flex items-center justify-center"
-            >
-              <VSpinner />
-            </div>
-            <p
-              v-else-if="!mapModal.feature"
-              class="min-h-[200px] flex items-center justify-center text-sm opacity-50"
-            >No map data available for this area.</p>
-            <VMap
-              v-else
-              :geojson="{ type: 'FeatureCollection', features: [mapModal.feature] }"
-              height="400px"
-            />
+          No records added yet
+        </div>
+
+        <!-- Footer -->
+        <p
+          v-if="groupedDistributions.length"
+          class="text-xs opacity-50 mt-4 text-center"
+        >
+          The same distribution data can also be viewed on the map in the Overview panel.<br>
+          You can also download a Darwin Core (DwC) spreadsheet with all asserted distributions and specimen records.
+        </p>
+
+      </VCardContent>
+    </VCard>
+
+    <!-- ========================= -->
+    <!-- MODALS (unchanged) -->
+    <!-- ========================= -->
+
+    <Teleport to="body">
+      <VModal
+        v-if="activeCitation"
+        @close="activeCitation = null"
+      >
+        <template #header>
+          <div class="text-sm font-medium">Reference</div>
+        </template>
+        <div
+          class="px-4 pb-4 text-sm leading-relaxed"
+          v-html="convertUrlsToLinks(activeCitation.full)"
+        />
+      </VModal>
+    </Teleport>
+
+    <Teleport to="body">
+      <VModal
+        v-if="mapModal.open"
+        @close="mapModal = { open: false }"
+      >
+        <template #header>
+          <div class="text-sm font-medium">
+            {{ mapModal.areaName }}
           </div>
-        </VModal>
-      </Teleport>
+        </template>
 
-      <!-- Citation modal -->
-      <Teleport to="body">
-        <VModal
-          v-if="activeCitation"
-          @close="activeCitation = null"
-        >
-          <template #header>
-            <div class="text-sm font-medium">Reference</div>
-          </template>
+        <div class="p-4">
           <div
-            class="px-4 pb-4 text-sm leading-relaxed"
-            v-html="convertUrlsToLinks(activeCitation.full)"
+            v-if="mapModal.loading"
+            class="min-h-[200px] flex items-center justify-center"
+          >
+            <VSpinner />
+          </div>
+
+          <p
+            v-else-if="!mapModal.feature"
+            class="min-h-[200px] flex items-center justify-center text-sm opacity-50"
+          >
+            No map data available for this area.
+          </p>
+
+          <VMap
+            v-else
+            :geojson="{ type: 'FeatureCollection', features: [mapModal.feature] }"
+            height="400px"
           />
-        </VModal>
-      </Teleport>
+        </div>
+      </VModal>
+    </Teleport>
 
-      <div
-        v-if="!isLoading && !groupedDistributions.length"
-        class="text-xl text-center my-8 w-full"
-      >
-        No records found.
-      </div>
-
-      <p
-        v-if="groupedDistributions.length"
-        class="text-xs opacity-50 mt-4 text-center"
-      >
-        The same distribution data can also be viewed on the map in the Overview panel.
-      </p>
-    </VCardContent>
-  </VCard>
+  </div>
 </template>
+
+
 
 <script setup>
 /**
  * PanelAssertedDistributions.vue
  *
- * Displays asserted distributions for an OTU and its descendants + synonyms.
+ * External panel (setup branch) displaying asserted distributions for an OTU,
+ * registered as panel:asserted-distributions.
  *
- * LOAD SEQUENCE (optimised for speed)
- * ------------------------------------
- * Step 1 — parallel:
- *   a. /asserted_distributions?taxon_name_id[]=X&descendants=true
- *      Covers the valid OTU and all its subspecies/varieties.
- *   b. /taxon_name_relationships?object_taxon_name_id[]=X
- *      Returns Invalidating relationships → synonym taxon_name_ids.
+ * DESCENDANT HANDLING
+ * -------------------
+ * Uses taxon_name_id[] + descendants=true so that:
+ *   - A species page includes records for all its subspecies/varieties.
+ *   - A subspecies page includes only its own records (no further descendants).
+ * The taxon_name_id comes from props.taxon.id (passed by the framework).
  *
- * Step 2 — only when synonyms exist:
- *   /asserted_distributions?taxon_name_id[]=SYN1&taxon_name_id[]=SYN2&...
- *   OTUs already present in step 1a are excluded to prevent duplication.
+ * TAXON TABS
+ * ----------
+ * When a species has records spanning multiple OTUs (e.g. the species itself
+ * and two subspecies), tabs appear:
+ *   "All"  — shows combined records for all OTUs
+ *   <each OTU name> — filters to that OTU's records only
+ * On subspecies pages (single OTU), no tabs are shown.
  *
- * Step 3 — one batch for all records:
- *   /citations?extend[]=source  (source object embedded, no separate /sources call)
+ * GROUPING
+ * --------
+ * Within the selected tab, records are grouped by shape.parent.name:
+ *   - parent = "Earth"  → top-level countries/territories ("Countries & Territories")
+ *   - parent = anything else → sub-national areas grouped under that parent name
+ * Groups sorted: Earth first, then alphabetical. Areas within groups: alphabetical.
  *
- * SYNONYM DETECTION
- * -----------------
- * asserted_distribution_object.object_tag contains &#10060; for synonyms,
- * &#10003; for valid taxa — no extra API call needed.
- *
- * TABS & MERGED VIEW
- * ------------------
- * Tabs appear when records span more than one OTU. The "All" tab merges
- * rows with the same geographic area into a single row and adds a Taxa
- * column listing all taxa recorded there. Per-OTU tabs show individual rows.
+ * CITATIONS
+ * ---------
+ * Two-step fetch (same pattern as PanelBiologicalAssociationsV2):
+ *   1. GET /citations?citation_object_type=AssertedDistribution&citation_object_id[]=...
+ *      → citation_source_body (short form). Note: the ":pages" suffix reflects
+ *      whatever was entered in TaxonWorks' pages field, which may contain a taxon
+ *      name rather than a page number (data entry convention in TaxonWorks).
+ *   2. GET /sources?source_id[]=...
+ *      → source.cached (full HTML reference)
+ * Multiple citations per area shown inline, separated by "; ".
+ * URLs in the full reference modal are made clickable via convertUrlsToLinks
+ * from the built-in bibliography module.
  */
 
-import { computed, onMounted, ref } from 'vue'
-import { makeAPIRequest } from '@/utils'
+import { convertUrlsToLinks } from '@/modules/bibliography/utils/convertUrlsToLinks.js'
+import PanelMapV2 from '../PanelMapV2/PanelMapV2.vue'
 import { useOtuPageRequest } from '@/modules/otus/helpers/useOtuPageRequest.js'
-import { fetchAssertedDistributionTags } from '../_shared/assertedDistributionTags.js'
-function convertUrlsToLinks(text = '') {
-  return text.replace(/(https?:\/\/[^\s<>"]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>')
-}
-
+import { makeAPIRequest } from '@/utils'
+import { computed, onMounted, ref } from 'vue'
+const otuId = computed(() => props.otuId || distributions.value.find((d) => !d.isSynonym)?.otuId || distributions.value[0]?.otuId)
 const props = defineProps({
-  otuId: {
-    type: [Number, String],
-    required: true
-  },
   taxon: {
     type: Object,
     required: true
   },
+
+  otuId: {
+    type: [Number, String],
+    default: null
+  },
+
+  // Load all at once; descendants=true can multiply record count
   per: {
     type: Number,
     default: 500
@@ -249,21 +303,27 @@ const isLoading = ref(false)
 const totalCount = ref(0)
 const activeCitation = ref(null)
 const selectedOtuId = ref('all')
+// otuId -> { isSynonym } from the coordinatified OTU list
+const otuMeta = ref(new Map())
+
 
 // Map modal state
 const mapModal = ref({ open: false })
-// Geographic area ID → GeoJSON Feature, merged from all OTU inventories.
-// Keyed by shape.id (geographic area ID) so any tab can find a polygon
-// regardless of which OTU's GeoJSON record it came from.
-const shapeIdMap = ref({})
-// Per-OTU promise cache — deduplicates concurrent requests for the same OTU.
+// Per-OTU GeoJSON promise cache: otuId → Promise<{ assertedDistId → GeoJSON Feature }>
+// Caching the promise (not the result) means a click that arrives while a pre-fetch is
+// still in-flight reuses the same request rather than starting a duplicate.
 const geoPromiseCache = {}
 
-const showTabs = computed(() => new Set(distributions.value.map((d) => d.otuId)).size > 1)
+// Show tabs only when records span more than one OTU (e.g. species + subspecies)
+const showTabs = computed(() => {
+  const unique = new Set(distributions.value.map((d) => d.otuId))
+  return unique.size > 1
+})
 
-// True when the All tab is active across multiple OTUs — collapses rows by area
+// True when the All tab is active with multiple OTUs — shows merged rows (one per area)
 const isMergedView = computed(() => selectedOtuId.value === 'all' && showTabs.value)
 
+// One tab per OTU, sorted by name, prefixed with "All"
 const tabs = computed(() => {
   const byOtu = new Map()
   for (const d of distributions.value) {
@@ -272,18 +332,28 @@ const tabs = computed(() => {
     }
     byOtu.get(d.otuId).count++
   }
-  const otuTabs = [...byOtu.values()].sort((a, b) => a.label.localeCompare(b.label))
-  return [{ id: 'all', count: distributions.value.length }, ...otuTabs]
+  const otuTabs = [...byOtu.values()].sort(
+    (a, b) => Number(a.isSynonym) - Number(b.isSynonym) || a.label.localeCompare(b.label)
+  )
+  return [{ id: 'all', label: 'All', count: distributions.value.length }, ...otuTabs]
 })
 
+// Distributions visible in the current tab
 const filteredDistributions = computed(() => {
   if (selectedOtuId.value === 'all') return distributions.value
-  return distributions.value.filter((d) => String(d.otuId) === String(selectedOtuId.value))
+  return distributions.value.filter(
+    (d) => String(d.otuId) === String(selectedOtuId.value)
+  )
 })
 
 /**
- * In the merged All tab: collapses distributions sharing the same geographic
- * area into one row, combining otuEntries and citations across all taxa.
+ * In the All tab (isMergedView), collapses distributions sharing the same
+ * geographic area into a single row: one entry per area listing all taxa
+ * (otuEntries) and all citations merged together.
+ * In per-OTU tabs, returns the distributions as-is.
+ *
+ * Both produce items compatible with openMapModal(item) — merged items
+ * carry `otuId` and `id` from the first distribution for map lookups.
  */
 function mergeByArea(dists) {
   const byArea = new Map()
@@ -291,21 +361,18 @@ function mergeByArea(dists) {
     const key = `${dist.parentName}|${dist.areaName}`
     if (!byArea.has(key)) {
       byArea.set(key, {
-        id: dist.id,
-        shapeId: dist.shapeId, // needed for map modal lookup
-        otuId: dist.otuId,     // needed for map modal GeoJSON fetch
+        id: dist.id,           // first dist's ID — used for GeoJSON map lookup
+        otuId: dist.otuId,     // first dist's OTU — used for GeoJSON fetch
         areaName: dist.areaName,
         areaType: dist.areaType,
         parentName: dist.parentName,
         isAbsent: false,
-        tags: [],
         otuEntries: [],
         citationList: []
       })
     }
     const m = byArea.get(key)
     m.isAbsent = m.isAbsent || dist.isAbsent
-    for (const t of dist.tags || []) if (!m.tags.includes(t)) m.tags.push(t)
     if (!m.otuEntries.some((e) => e.otuId === dist.otuId)) {
       m.otuEntries.push({ otuId: dist.otuId, otuName: dist.otuName, isSynonym: dist.isSynonym })
     }
@@ -314,19 +381,29 @@ function mergeByArea(dists) {
   return [...byArea.values()]
 }
 
+/**
+ * Groups items by parent area name for rendering.
+ * Source is merged (one row per area) in the All tab, per-distribution otherwise.
+ * Earth-children (countries) come first, then sub-national groups alphabetically.
+ * Areas within each group are sorted alphabetically.
+ */
 const groupedDistributions = computed(() => {
   const source = isMergedView.value
-    ? mergeByArea(filteredDistributions.value)
+    ? mergeByArea(distributions.value)
     : filteredDistributions.value
 
   const groups = new Map()
+
   for (const dist of source) {
-    if (!groups.has(dist.parentName)) groups.set(dist.parentName, [])
-    groups.get(dist.parentName).push(dist)
+    const parent = dist.parentName
+    if (!groups.has(parent)) groups.set(parent, [])
+    groups.get(parent).push(dist)
   }
+
   for (const items of groups.values()) {
     items.sort((a, b) => a.areaName.localeCompare(b.areaName))
   }
+
   return [...groups.entries()]
     .sort(([a], [b]) => {
       if (a === 'Earth') return -1
@@ -340,154 +417,223 @@ const groupedDistributions = computed(() => {
     }))
 })
 
-function makeDistribution(item, citationList, tags = []) {
+/**
+ * Transforms a raw /asserted_distributions item into a display object.
+ * Geographic area data is in asserted_distribution_shape (no extend needed).
+ */
+function makeDistribution(item, citationList) {
   const shape = item.asserted_distribution_shape || {}
   const obj = item.asserted_distribution_object || {}
+
   return {
     id: item.id,
     otuId: item.asserted_distribution_object_id,
-    shapeId: shape.id,
     otuName: obj.taxon_name || '',
-    isSynonym: (obj.object_tag || '').includes('&#10060;'),
+    isSynonym:
+      !!otuMeta.value.get(item.asserted_distribution_object_id)?.isSynonym &&
+      (obj.taxon_name || '') !== (props.taxon.cached || props.taxon.expanded_name || ''),
     areaName: shape.name || '',
     areaType: shape.geographic_area_type?.name || '',
     parentName: shape.parent?.name || 'Earth',
     isAbsent: !!item.is_absent,
-    tags,
     citationList
   }
 }
 
 /**
- * Fetches GeoJSON for one OTU and merges AssertedDistribution polygon features
- * into shapeIdMap, keyed by geographic area ID (shape.id). The promise is cached
- * immediately so concurrent calls share one request.
- * VMap expects properties.base as an array, so base is wrapped: [fp.base].
+ * Truncates a citation_source_body string to "First Author et al., Year[:pages]"
+ * when three or more authors are present. Two or fewer authors are shown as-is.
+ *
+ * Detects 3+ authors by checking whether an "&" (joining the last two authors)
+ * is preceded by at least one comma (meaning there are additional authors before).
+ *
+ * Examples:
+ *   "Bajtenov, 1974a"              → unchanged (1 author)
+ *   "Smith & Jones, 2020"          → unchanged (2 authors)
+ *   "Smith, Jones & Brown, 2020"   → "Smith et al., 2020"
+ *   "Alonso-Zarazaga, ..., 2023"   → "Alonso-Zarazaga et al., 2023"
  */
-function fetchGeoForOtu(otuId) {
-  if (geoPromiseCache[otuId]) return geoPromiseCache[otuId]
-  geoPromiseCache[otuId] = (async () => {
-    try {
-      const { data } = await makeAPIRequest.get(`/otus/${otuId}/inventory/distribution.geojson`)
-      const updates = {}
-      for (const f of data?.features || []) {
-        const fp = f.properties || {}
-        if (fp.base?.type === 'AssertedDistribution' && fp.shape?.id && f.geometry) {
-          updates[fp.shape.id] = { ...f, properties: { ...fp, base: [fp.base] } }
-        }
-      }
-      if (Object.keys(updates).length) {
-        shapeIdMap.value = { ...shapeIdMap.value, ...updates }
-      }
-    } catch {
-      // remain silent; cached promise prevents retry storms
-    }
-  })()
-  return geoPromiseCache[otuId]
-}
-
-/**
- * Opens the map modal for a clicked area row. Awaits the GeoJSON for both
- * the page OTU (comprehensive inventory) and the clicked distribution's OTU,
- * then looks up the polygon by geographic area ID.
- */
-async function openMapModal(item) {
-  mapModal.value = { open: true, loading: true, areaName: item.areaName, feature: null }
-  await Promise.all([fetchGeoForOtu(props.otuId), fetchGeoForOtu(item.otuId)])
-  mapModal.value = {
-    open: true,
-    loading: false,
-    areaName: item.areaName,
-    feature: shapeIdMap.value[item.shapeId] ?? null
-  }
-}
-
 function shortCitation(body) {
   if (!body) return ''
+  // Match trailing ", YYYY[letter][:pages]" — the year+pages suffix
   const m = body.match(/,\s*(\d{4}[a-z]?(?::[^\s,]+)?)\s*$/)
   if (!m) return body
   const year = m[1]
   const authorsStr = body.slice(0, m.index)
+  // 3+ authors: "&" exists AND at least one "," precedes the last "&"
   const ampIdx = authorsStr.lastIndexOf('&')
   if (ampIdx < 0 || !authorsStr.slice(0, ampIdx).includes(',')) return body
-  return `${authorsStr.split(',')[0].trim()} et al., ${year}`
+  const firstAuthor = authorsStr.split(',')[0].trim()
+  return `${firstAuthor} et al., ${year}`
 }
 
+/**
+ * Fetches structured citations (short form + full reference) for a list of
+ * asserted distribution IDs.
+ * Returns a Map of distributionId -> array of { id, display, short, full }.
+ *   display — truncated to "First et al., Year" for 3+ authors; shown in table
+ *   short   — original citation_source_body; kept for reference
+ *   full    — full HTML reference from source.cached; shown in modal
+ */
 async function fetchCitations(distributionIds) {
   if (!distributionIds.length) return new Map()
 
   const params = new URLSearchParams()
   params.append('citation_object_type', 'AssertedDistribution')
-  params.append('extend[]', 'source')
   distributionIds.forEach((id) => params.append('citation_object_id[]', id))
 
-  const { data: citations } = await makeAPIRequest.get(`/citations?${params.toString()}`)
+  const { data: citations } = await makeAPIRequest.get(
+    `/citations?${params.toString()}`
+  )
+
+  if (!citations.length) return new Map()
+
+  const sourceIds = [...new Set(citations.map((c) => c.source_id))]
+  const srcParams = new URLSearchParams()
+  sourceIds.forEach((id) => srcParams.append('source_id[]', id))
+
+  const { data: sources } = await makeAPIRequest.get(
+    `/sources?${srcParams.toString()}`
+  )
+
+  const sourceMap = new Map(sources.map((s) => [s.id, s.cached]))
 
   const result = new Map()
   for (const cit of citations) {
     const entry = {
       id: cit.id,
+      short: cit.citation_source_body || '',
       display: shortCitation(cit.citation_source_body || ''),
-      full: cit.source?.cached || cit.citation_source_body || ''
+      full: sourceMap.get(cit.source_id) || cit.citation_source_body || ''
     }
-    if (!result.has(cit.citation_object_id)) result.set(cit.citation_object_id, [])
+    if (!result.has(cit.citation_object_id)) {
+      result.set(cit.citation_object_id, [])
+    }
     result.get(cit.citation_object_id).push(entry)
   }
+
   return result
 }
 
+/**
+ * Fetches GeoJSON for a single OTU and returns a map of
+ * AssertedDistribution ID → GeoJSON Feature.
+ *
+ * The promise itself is cached immediately, so concurrent calls (e.g. a
+ * background pre-fetch racing with a user click) share the same in-flight
+ * request instead of issuing duplicates.
+ */
+function fetchGeoForOtu(otuId) {
+  if (geoPromiseCache[otuId]) return geoPromiseCache[otuId]
+
+  geoPromiseCache[otuId] = (async () => {
+    const byId = {}
+    try {
+      const { data } = await makeAPIRequest.get(
+        `/otus/${otuId}/inventory/distribution.geojson`
+      )
+      for (const f of data?.features || []) {
+        const fp = f.properties || {}
+        if (fp.base?.type === 'AssertedDistribution' && fp.base?.id) {
+          // VMap's geojsonOptions expects properties.base to be an array
+          byId[fp.base.id] = { ...f, properties: { ...fp, base: [fp.base] } }
+        }
+      }
+    } catch {
+      // return empty map; promise stays cached to avoid hammering on error
+    }
+    return byId
+  })()
+
+  return geoPromiseCache[otuId]
+}
+
+/**
+ * Opens the map modal for a distribution row.
+ * Awaits the (possibly already in-flight) GeoJSON promise for that OTU.
+ */
+async function openMapModal(dist) {
+  mapModal.value = { open: true, loading: true, areaName: dist.areaName, feature: null }
+  const byId = await fetchGeoForOtu(dist.otuId)
+  mapModal.value = { open: true, loading: false, areaName: dist.areaName, feature: byId[dist.id] ?? null }
+}
+
+/**
+ * Loads all asserted distributions for the current taxon (including descendants),
+ * then fetches structured citations and geographic GeoJSON for map popups.
+ */
 async function loadDistributions() {
   isLoading.value = true
+
   try {
-    // Step 1: parallel — main records (valid OTU + descendants) + synonym relationships
-    const [adResult, relResult] = await Promise.all([
-      useOtuPageRequest('panel:asserted-distributions', () =>
-        makeAPIRequest.get('/asserted_distributions', {
-          params: { 'taxon_name_id[]': props.taxon.id, descendants: true, per: props.per }
-        })
-      ),
-      makeAPIRequest.get('/taxon_name_relationships', {
-        params: { 'object_taxon_name_id[]': props.taxon.id, per: 500 }
-      })
-    ])
+    // Include synonyms: "coordinatify" returns every OTU whose name is (or is
+    // a synonym/combination of) this taxon, plus descendants (e.g. subspecies),
+    // so records published under a junior synonym are shown too.
+    const { data: otus } = await makeAPIRequest.get('/otus', {
+      params: {
+        'taxon_name_id[]': props.taxon.id,
+        descendants: true,
+        coordinatify: true,
+        per: 500
+      }
+    })
 
-    const adData = adResult.data
-    const synonymTaxonNameIds = [...new Set(
-      (relResult.data || [])
-        .filter((r) => r.type?.includes('Invalidating'))
-        .map((r) => r.subject_taxon_name_id)
-        .filter(Boolean)
-    )]
-
-    // Step 2: synonym ADs, only when synonyms exist, excluding already-known OTUs
-    let synData = []
-    if (synonymTaxonNameIds.length) {
-      const knownOtuIds = new Set(adData.map((d) => String(d.asserted_distribution_object_id)))
-      const params = new URLSearchParams()
-      synonymTaxonNameIds.forEach((id) => params.append('taxon_name_id[]', id))
-      params.append('per', props.per)
-      const { data } = await makeAPIRequest.get(`/asserted_distributions?${params.toString()}`)
-      synData = data.filter((d) => !knownOtuIds.has(String(d.asserted_distribution_object_id)))
-    }
-
-    // Step 3: citations + tags for all records, one batch each, in parallel
-    const allData = [...adData, ...synData]
-    const [citationsMap, tagsMap] = await Promise.all([
-      fetchCitations(allData.map((d) => d.id)),
-      fetchAssertedDistributionTags(allData.map((d) => d.id))
-    ])
-
-    distributions.value = allData.map((item) =>
-      makeDistribution(item, citationsMap.get(item.id) || [], tagsMap.get(item.id) || [])
+    otuMeta.value = new Map(
+      (otus || []).map((o) => [
+        o.id,
+        { isSynonym: / now /.test(String(o.object_tag || '').replace(/<[^>]+>/g, '')) }
+      ])
     )
-    totalCount.value = distributions.value.length
 
-    // Background: pre-fetch GeoJSON for all OTUs so map popups are instant.
-    // Always includes props.otuId — its inventory is most comprehensive.
-    const allOtuIds = [...new Set([props.otuId, ...distributions.value.map((d) => d.otuId)])]
-    allOtuIds.forEach(fetchGeoForOtu)
-  } catch {
-    // silently fail
+    const scopeOtuIds = (otus || []).map((o) => o.id)
+    const chunks = []
+    for (let i = 0; i < scopeOtuIds.length; i += 80) chunks.push(scopeOtuIds.slice(i, i + 80))
+
+    const responses = scopeOtuIds.length
+      ? await Promise.all(
+          chunks.map((chunk, index) => {
+            const request = () =>
+              makeAPIRequest.get('/asserted_distributions', {
+                params: { 'otu_id[]': chunk, per: props.per }
+              })
+            // Register the first request with the page's Datamap / JSON menu
+            return index === 0 ? useOtuPageRequest('panel:asserted-distributions', request) : request()
+          })
+        )
+      : [
+          await useOtuPageRequest('panel:asserted-distributions', () =>
+            makeAPIRequest.get('/asserted_distributions', {
+              params: {
+                'taxon_name_id[]': props.taxon.id,
+                descendants: true,
+                per: props.per
+              }
+            })
+          )
+        ]
+
+    const seen = new Set()
+    const data = responses
+      .flatMap((r) => r.data || [])
+      .filter((d) => !seen.has(d.id) && seen.add(d.id))
+    const headers = { 'pagination-total': data.length }
+
+    totalCount.value = Number(headers['pagination-total']) || data.length
+
+    const ids = data.map((d) => d.id)
+    const citationsMap = await fetchCitations(ids)
+
+    distributions.value = data.map((item) =>
+      makeDistribution(item, citationsMap.get(item.id) || [])
+    )
+
+    // Kick off GeoJSON fetches in the background so they're ready (or nearly
+    // ready) when the user clicks an area name. The promise cache ensures
+    // clicks that arrive before a fetch completes reuse the in-flight request.
+    const otuIds = [...new Set(distributions.value.map((d) => d.otuId))]
+    otuIds.forEach(fetchGeoForOtu)
+  } catch (e) {
+    // silently fail; spinner stops and no results show
   } finally {
     isLoading.value = false
   }
