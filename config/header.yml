@@ -6,7 +6,7 @@
       link: /
 
     - label: About
-      link: /about
+      link: /about.vue
 
     - label: Bibliography
       link: /resources/tw/filter/bibliography
