@@ -38,6 +38,6 @@ defineProps({
 .wid-page-header {
   background:
     radial-gradient(50rem 20rem at 90% 0%, rgba(0, 0, 0, 0.65), transparent 60%),
-    linear-gradient(180deg, #000033 0%, #001123f 100%);
+    linear-gradient(180deg, #111111 0%, #111133 100%);
 }
 </style>
