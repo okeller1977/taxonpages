@@ -2,8 +2,8 @@
   <div class="wid-home bg-base-background">
     <PageHeader
       eyebrow="About"
-      title="The people behind WID"
-      subtitle="The World Ichneumonidae Database is curated by an international team of specialists who manage, check and update the data for their groups of expertise."
+      title="The people behind www.Lampyridae.world"
+      subtitle="The World Lampyridae Database is curated by an international team of specialists who manage, check and update the data for their groups of expertise."
     />
     <AboutMap />
     <AboutList />
