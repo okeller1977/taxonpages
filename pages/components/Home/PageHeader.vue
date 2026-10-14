@@ -37,7 +37,7 @@ defineProps({
 <style scoped>
 .wid-page-header {
   background:
-    radial-gradient(50rem 20rem at 90% 0%, rgba(42, 98, 183, 0.45), transparent 60%),
-    linear-gradient(180deg, #0f1b33 0%, #13223f 100%);
+    radial-gradient(50rem 20rem at 90% 0%, rgba(0, 0, 0, 0.65), transparent 60%),
+    linear-gradient(180deg, #000033 0%, #001123f 100%);
 }
 </style>
