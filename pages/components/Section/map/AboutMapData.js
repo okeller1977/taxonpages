@@ -65,7 +65,7 @@ export const collaborators = [
     leader: 'no',
     administrator: 'no',
     orcid: 'https://orcid.org/0009-0003-8494-7487',
-    researchgate: 'https://www.researchgate.net/profile/Martha-Drake',
+    researchgate: '',
     googlescholar: '',
     image: ''
   },
@@ -79,8 +79,8 @@ export const collaborators = [
     leader: 'no',
     administrator: 'no',
     orcid: 'https://orcid.org/0000-0002-2029-3918',
-    researchgate: 'https://www.researchgate.net/profile/Lesley-Ballantyne-2',
-    googlescholar: 'https://scholar.google.com/citations?user=ujM3-tIAAAAJ',
+    researchgate: '',
+    googlescholar: '',
     image: ''
   },
 {
@@ -93,7 +93,7 @@ export const collaborators = [
     leader: 'no',
     administrator: 'no',
     orcid: 'https:// orcid.org/0000-0002-9711-2951',
-    researchgate: 'https://www.researchgate.net/profile/Ishwari-Gutierrez-Carranza',
+    researchgate: '',
     googlescholar: '',
     image: ''
   }
