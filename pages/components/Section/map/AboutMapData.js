@@ -69,4 +69,32 @@ export const collaborators = [
     googlescholar: '',
     image: ''
   }
+  {
+    first_name: 'Lesley',
+    last_name: 'Ballantyne',
+    institution: 'Charles Sturt University',
+    country: 'Australia',
+    lat: -35.065489,
+    lng: 147.359306,
+    leader: 'no',
+    administrator: 'no',
+    orcid: 'https://orcid.org/0000-0002-2029-3918',
+    researchgate: 'https://www.researchgate.net/profile/Lesley-Ballantyne-2',
+    googlescholar: 'https://scholar.google.com/citations?user=ujM3-tIAAAAJ',
+    image: ''
+  },
+{
+    first_name: 'Ishwari G.',
+    last_name: 'Gutiérrez-Carranza',
+    institution: 'Universidad Nacional Autónoma de México',
+    country: 'Mexico',
+    lat: 19.312343,
+    lng: -99.183025,
+    leader: 'no',
+    administrator: 'no',
+    orcid: 'https:// orcid.org/0000-0002-9711-2951',
+    researchgate: 'https://www.researchgate.net/profile/Ishwari-Gutierrez-Carranza',
+    googlescholar: '',
+    image: ''
+  }
 ]
