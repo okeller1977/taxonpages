@@ -68,7 +68,7 @@ export const collaborators = [
     researchgate: 'https://www.researchgate.net/profile/Martha-Drake',
     googlescholar: '',
     image: ''
-  }
+  },
   {
     first_name: 'Lesley',
     last_name: 'Ballantyne',
