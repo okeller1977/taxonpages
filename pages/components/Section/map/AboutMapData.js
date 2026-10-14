@@ -11,7 +11,7 @@ export const collaborators = [
     orcid: 'https://orcid.org/0000-0001-5067-3316',
     researchgate: 'https://www.researchgate.net/profile/Oliver-Keller-2',
     googlescholar: 'https://scholar.google.com/citations?user=IxsBnkYAAAAJ&hl',
-    image: '/images/collaborators/OliverKeller.jpg'
+    image: '/collaborators/OliverKeller.jpg'
   },
   {
     first_name: 'Luiz Felipe',
@@ -39,7 +39,7 @@ export const collaborators = [
     orcid: 'https://orcid.org/0000-0002-7954-6254',
     researchgate: 'https://www.researchgate.net/profile/Joseph-Mchugh',
     googlescholar: 'https://scholar.google.com/citations?user=LepEQeQAAAAJ',
-    image: '/images/collaborators/McHugh.jpg'
+    image: '/collaborators/McHugh.jpg'
   },
   {
     first_name: 'Kathrin F.',
@@ -53,7 +53,7 @@ export const collaborators = [
     orcid: 'https://orcid.org/0000-0002-0648-3993',
     researchgate: 'https://www.researchgate.net/profile/Kathrin-Stanger-Hall',
     googlescholar: 'https://scholar.google.com/citations?user=i3IM2jEAAAAJ',
-    image: '/images/collaborators/Stanger-Hall.jpg'
+    image: '/collaborators/Stanger-Hall.jpg'
   },
     {
     first_name: 'Martha',
