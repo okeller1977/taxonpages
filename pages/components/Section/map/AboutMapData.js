@@ -70,6 +70,34 @@ export const collaborators = [
     image: ''
   },
   {
+    first_name: 'Kimberly',
+    last_name: 'Garcia Lopez',
+    institution: 'University of Georgia',
+    country: 'USA',
+    lat: 33.948421,
+    lng: -83.373786,
+    leader: 'no',
+    administrator: 'no',
+    orcid: 'https://orcid.org/0000-0002-3631-180X',
+    researchgate: '',
+    googlescholar: '',
+    image: ''
+  },
+  {
+    first_name: 'Miriam',
+    last_name: 'Aquino Romero',
+    institution: 'University of Georgia',
+    country: 'USA',
+    lat: 33.948421,
+    lng: -83.373786,
+    leader: 'no',
+    administrator: 'no',
+    orcid: 'https://orcid.org/0000-0003-1661-3824',
+    researchgate: '',
+    googlescholar: '',
+    image: ''
+  },
+  {
     first_name: 'Lesley',
     last_name: 'Ballantyne',
     institution: 'Charles Sturt University',
