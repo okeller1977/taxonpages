@@ -34,7 +34,7 @@
 
     <p class="mt-12 text-3xl font-bold tracking-tight text-base-content">Curators</p>
     <p class="mt-2 text-base-content/65 max-w-2xl">
-      Specialists who curate names, literature and data for their groups of
+      Specialists who advise with names, literature and data for their groups of
       expertise.
     </p>
 
